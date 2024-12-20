@@ -3,9 +3,10 @@ const authRouter = express.Router()
 const {signupValidate} = require("../utils/signupValidate")
 const bcrypt = require("bcrypt")
 const User = require("../models/user")
+const { userAuth } = require('../middlewares/auth')
 
 // Add user to DB
-authRouter.post("/signup", async (req,res)=>{
+ authRouter.post("/signup", async (req,res)=>{
     // Vlidate the user
 
     signupValidate(req)
@@ -52,5 +53,18 @@ authRouter.post("/login",async (req,res)=>{
         res.status(400).send("ERROR "+ err)
     }
 })
+
+authRouter.post("/logout",userAuth,async (req,res)=>{
+    try{
+        res.cookie('token',null,{
+            expires: new Date(Date.now())
+        })
+        res.send(`User logout succesfully`)
+    }catch(err){
+        res.status(400).send("Something went wrong!!!!!")
+    }
+
+})
+
 
 module.exports = authRouter;
